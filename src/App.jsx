@@ -86,8 +86,8 @@ function Flashcard({faceup, card}) {
     // Instead, just have event listeners inside the components' return statements.
     return (
         <div id="flashcard" onClick={flip}>
-            <img id="flashcardImage" src={currImage} />
-            <p id="flashcardText">{currText}</p>
+            <img id="flashcardImage" src={currImage}/>
+            <p id="flashcardText" onChange={() => {console.log("Do something!"); card=card;}}>{currText}</p>
         </div>
     )
 }
@@ -103,20 +103,15 @@ function App() {
     const [currTitle, setCurrTitle] = useState(currCardSet.title)
     const [currDesc, setCurrDesc] = useState(currCardSet.desc)
     const [currPool, setCurrPool] = useState(currCardSet.pool)
-    console.log(currPool)
 
     function shuffle(arr) {
         // Given an array "arr", return a shuffled version of that array.
-        console.log(arr)
         for(let i=0; i<arr.length; i++) {
             let hold = arr[i]
             let swapInd = Math.floor(Math.random() * arr.length)
-            console.log(swapInd)
-            console.log(hold)
             arr[i] = arr[swapInd]
             arr[swapInd] = arr[i]
         }
-        console.log(arr)
         // Actually, since arr is passed by reference, the shuffle is kept even when this function ends.
         // No return statement necessary!
         // To return a new array, though, use "return arr.slice()".
@@ -124,11 +119,11 @@ function App() {
 
     function handleScroll(scrollRight = true) {
         if(scrollRight && currInd < currPool.length-1) {
-            setCurrInd(currInd+1)
+            setCurrInd((currInd) => currInd+1)
             console.log("scrolling right")
         }
         else if(!scrollRight && currInd > 0) {
-            setCurrInd(currInd-1)
+            setCurrInd((currInd) => currInd-1)
             console.log("scrolling left")
         }
         else {
@@ -142,7 +137,7 @@ function App() {
         shuffle(currPool)
         setCurrInd(0)
         console.log("shuffle done")
-        console.log(arr)
+        console.log(currInd)
     }
 
     return (
@@ -155,9 +150,9 @@ function App() {
             />
             <div className="answerbar">
                 <input id="answer" defaultValue=":)"></input>
-                <button id="submitButton" type="submit" onClick={console.log("hi ma")}></button>
+                <button id="submitButton" type="submit" ></button>
             </div>
-            <div className="navbar">
+            <div className="navbar" onChange={() => {alert("Hey!")}}>
                 <button
                     id="scrollLeft"
                     onClick={
