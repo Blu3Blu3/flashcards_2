@@ -7,7 +7,7 @@ import './App.css'
 const DEFAULT_IMAGE = "img_default"
 
 // Let's just build a better Flashcard component.
-function Flashcard(faceup, card) {
+function Flashcard({faceup, card}) {
     /*
     Keep it simple this time.
 
@@ -27,7 +27,6 @@ function Flashcard(faceup, card) {
     */
 
     // Trying something new
-    console.log("in the flashcard, with white curtains")
     /*
     Ok, so if you use props, say in "<Component first="Alice" last="Bobbery" />", and you have "function Component(first, last)",
     with NO DESTRUCTURING in the () themselves:
@@ -35,18 +34,42 @@ function Flashcard(faceup, card) {
         - You need to destructure "first", then destructure each of its attributes since they wrap the actual prop values.
     - console.log(last) --> undefined
         - Everything gets absorbed into "first".
-    - console.log({...first}) --> 
+    - console.log({first}) --> Object {Object {first: "Alice"}, Object {last: "Bobbery"}}
+        - Somehow the same.
+    - console.log({last}) --> Object {last: undefined}
+        - undefined gets treated as an object.
+    - console.log({...first} --> Object {Object {first: "Alice"}, Object {last: "Bobbery"}}
+        - Also somehow the same.
+    - console.log({...last}) --> nothing
+        - Can't spread undefined.
 
+    Now, if you destructure the props first, like in "function Component({first, last})":
+    - console.log(first) --> "Alice"
+        - This has been properly destructured.
+    - console.log(last) --> "Bobbery"
+        - This has also been properly destructured.
+    - console.log({first}) --> Object {first: "Alice"}
+        - Somehow this wraps the value as an object.
+    - console.log({last}) --> Object {last: "Bobbery"}
+        - Also gets wrapped. Just don't use {} again.
+    - console.log({...first} --> nothing
+        - Can't spread undefined.
+    - console.log({...last}) --> nothing
+        - Still can't spread undefined.
+
+    Note that if you pass objects as props, all this still applies, but you won't be able to destructure them more once they're
+    just an unwrapped object. At that point, forgo all {} use and just access the attributes or use the object as normal.
+
+    Ex.
+    Pass <Component person={{first: "Alice", last: "Bobbery", id: 12345}}> -->
+    function Component({person}) --> person = Object {first: "Alice", last: "Bobbery", id: 12345} -->
+    - console.log(person["first"]
     */
-    console.log(faceup)
-    console.log(card)
-    console.log("breaka")
-    console.log({faceup})
-    console.log({card})
-    const cardData = {card}
-    const [currText, setCurrText] = useState(cardData.textA)
-    const [currImage, setCurrImage] = useState(DEFAULT_IMAGE)
+    const cardData = card
+    const [currText, setCurrText] = useState(faceup ? cardData.textA : cardData.textB)
+    const [currImage, setCurrImage] = useState(faceup ? cardData.imgA : cardData.imgB)
 
+    // This works, but it takes 2 clicks to flip from side B to side A for some reason. Fix that later.
     function flip() {
         if(faceup) {
             setCurrText(cardData.textB)
@@ -56,8 +79,11 @@ function Flashcard(faceup, card) {
             setCurrText(cardData.textA)
             setCurrImage(cardData.imgA)
         }
+        faceup = !faceup
     }
 
+    // NOTE: Don't pass onClick or other event listeners as props; they'll be read as variables with some value.
+    // Instead, just have event listeners inside the components' return statements.
     return (
         <div id="flashcard" onClick={flip}>
             <img id="flashcardImage" src={currImage} />
@@ -74,25 +100,23 @@ function App() {
     const [currInd, setCurrInd] = useState(0)
 
     const [currCardSet, setCurrCardSet] = useState({...cardsets[0]})
-    console.log("currCardSet is: ")
-    console.log(currCardSet)
-    console.log("destructuring that...")
-    console.log({...currCardSet})
     const [currTitle, setCurrTitle] = useState(currCardSet.title)
     const [currDesc, setCurrDesc] = useState(currCardSet.desc)
     const [currPool, setCurrPool] = useState(currCardSet.pool)
-    console.log(`currPool is: ${currPool}`)
-    console.log("currPool[currInd] is:")
-    console.log(currPool[currInd])
+    console.log(currPool)
 
     function shuffle(arr) {
         // Given an array "arr", return a shuffled version of that array.
+        console.log(arr)
         for(let i=0; i<arr.length; i++) {
             let hold = arr[i]
-            let swapInd = Math.floor(Math.random*arr.length)
+            let swapInd = Math.floor(Math.random() * arr.length)
+            console.log(swapInd)
+            console.log(hold)
             arr[i] = arr[swapInd]
             arr[swapInd] = arr[i]
         }
+        console.log(arr)
         // Actually, since arr is passed by reference, the shuffle is kept even when this function ends.
         // No return statement necessary!
         // To return a new array, though, use "return arr.slice()".
@@ -115,16 +139,20 @@ function App() {
 
     function handleShuffle(arr) {
         console.log("shuffling...")
-        shuffle(arr)
+        shuffle(currPool)
         setCurrInd(0)
         console.log("shuffle done")
+        console.log(arr)
     }
 
     return (
         <>
             <h1 id="title">{currTitle}</h1>
             <p id="desc">{currDesc}</p>
-            <Flashcard faceup={{faceup}} card={currPool[currInd]} />
+            <Flashcard
+                faceup={faceup}
+                card={currPool[currInd]}
+            />
             <div className="answerbar">
                 <input id="answer" defaultValue=":)"></input>
                 <button id="submitButton" type="submit" onClick={console.log("hi ma")}></button>
