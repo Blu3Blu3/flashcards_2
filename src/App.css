@@ -1,0 +1,44 @@
+body
+{
+    background-color: pink;
+}
+
+#flashcard
+{
+    width: 80%;
+    height: 60%;
+    text-align: center;
+    margin-left: 10%;
+    background-color: white;
+    border: 3px solid rgb(176, 16, 69);
+    border-radius: 15px;
+}
+
+.image
+{
+    border: 1.5px solid black;
+    border-radius: 15px;
+    margin-top: 30px;
+}
+
+.desc
+{
+    margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.navbar
+{
+    margin: 15px;
+}
+
+#scrollLeft
+{
+    margin-right: 30px;
+}
+
+#scrollRight
+{
+    margin-left: 30px;
+}
